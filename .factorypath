@@ -98,4 +98,7 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/mail/jakarta.mail/1.6.7/jakarta.mail-1.6.7.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/sun/activation/jakarta.activation/1.2.2/jakarta.activation-1.2.2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/itextpdf/itextpdf/5.5.13.3/itextpdf-5.5.13.3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="EXTJAR" id="C:\Users\ishdapso\Downloads\DISPATCH_PORTAL_APPLICATION2-master-master\libs\snLibrary.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-dbcp/commons-dbcp/1.4/commons-dbcp-1.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-pool/commons-pool/1.6/commons-pool-1.6.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

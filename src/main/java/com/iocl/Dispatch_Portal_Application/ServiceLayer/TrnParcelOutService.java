@@ -105,7 +105,7 @@ public class TrnParcelOutService {
 	                            "<p>Please find the details in the attached PDF.</p>" +
 	                            "<p>Best regards,<br>" +
 	                            "Indian Oil Corporation Limited</p>";
-	                    emailService.sendEmail(email, subject, messageBody, pdfBytes);	                	
+//	                    emailService.sendEmail(email, subject, messageBody, pdfBytes);	                	
 	                    //emailService.sendEmail(email, "Parcel Notification", "You have received a new parcel with Tracking ID: " + createdParcel.getConsignmentNumber(), pdfBytes);
 	                }
 	            }
@@ -192,7 +192,7 @@ public class TrnParcelOutService {
 	                    String email = locAdmin.getEmailId();
 	                    if (email != null) {
 	                        try {
-	                            emailService.sendEmail(email, "Parcel Status Changed", "The status of the parcel with Tracking ID " + OutTrackingId + " has been changed to 'D'.", pdfBytes);
+//	                            emailService.sendEmail(email, "Parcel Status Changed", "The status of the parcel with Tracking ID " + OutTrackingId + " has been changed to 'D'.", pdfBytes);
 	                        } catch (Exception e) {
 	                            e.printStackTrace();
 	                        }
@@ -264,14 +264,16 @@ public class TrnParcelOutService {
 	            dto.setSenderDepartment(parcel.getSenderDepartment());
 	            dto.setSenderName(parcel.getSenderName());
 	            String recipientlocode = parcel.getRecipientLocCode();
-	            if (recipientlocode != null) {
-	            	recipientlocode = recipientlocode.trim();
+	            if (recipientlocode != null && !recipientlocode.trim().isEmpty()) {
+	                recipientlocode = recipientlocode.trim();
 	                String recLocName = mstLocationService.getLocNameByCode(recipientlocode);
-	                // Set formatted location information in senderLocCode
-	                dto.setRecipientLocCode(recLocName +" (" + recipientlocode + ")");
+	                dto.setRecipientLocCode(recLocName != null && !recLocName.trim().isEmpty()
+	                    ? recLocName + " (" + recipientlocode + ")"
+	                   // : "Unknown Location (" + recipientlocode + ")"
+	                   : recipientlocode 
+	                		);
 	            } else {
-	                // Handle the case where senderLocCode is null
-	                dto.setRecipientLocCode("unknown location");
+	                dto.setRecipientLocCode("Unknown Location");
 	            }
 	          
 	            dto.setRecipientDepartment(parcel.getRecipientDepartment());
@@ -324,7 +326,9 @@ public class TrnParcelOutService {
 		                String recLocName = mstLocationService.getLocNameByCode(recipientlocode);
 		                dto.setRecipientLocCode(recLocName != null && !recLocName.trim().isEmpty()
 		                    ? recLocName + " (" + recipientlocode + ")"
-		                    : "Unknown Location (" + recipientlocode + ")");
+		                   // : "Unknown Location (" + recipientlocode + ")"
+		                   : recipientlocode 
+		                		);
 		            } else {
 		                dto.setRecipientLocCode("Unknown Location");
 		            }
@@ -375,11 +379,12 @@ public class TrnParcelOutService {
 		                String recLocName = mstLocationService.getLocNameByCode(recipientlocode);
 		                dto.setRecipientLocCode(recLocName != null && !recLocName.trim().isEmpty()
 		                    ? recLocName + " (" + recipientlocode + ")"
-		                    : "Unknown Location (" + recipientlocode + ")");
+		                   // : "Unknown Location (" + recipientlocode + ")"
+		                   : recipientlocode 
+		                		);
 		            } else {
 		                dto.setRecipientLocCode("Unknown Location");
 		            }
-
 		          
 		            dto.setRecipientDepartment(parcel.getRecipientDepartment());
 		            dto.setRecipientName(parcel.getRecipientName());
@@ -420,14 +425,16 @@ public class TrnParcelOutService {
 	            dto.setSenderDepartment(parcel.getSenderDepartment());
 	            dto.setSenderName(parcel.getSenderName());
 	            String recipientlocode = parcel.getRecipientLocCode();
-	            if (recipientlocode != null) {
-	            	recipientlocode = recipientlocode.trim();
+	            if (recipientlocode != null && !recipientlocode.trim().isEmpty()) {
+	                recipientlocode = recipientlocode.trim();
 	                String recLocName = mstLocationService.getLocNameByCode(recipientlocode);
-	                // Set formatted location information in senderLocCode
-	                dto.setRecipientLocCode(recLocName +" (" + recipientlocode + ")");
+	                dto.setRecipientLocCode(recLocName != null && !recLocName.trim().isEmpty()
+	                    ? recLocName + " (" + recipientlocode + ")"
+	                   // : "Unknown Location (" + recipientlocode + ")"
+	                   : recipientlocode 
+	                		);
 	            } else {
-	                // Handle the case where senderLocCode is null
-	                dto.setRecipientLocCode("unknown location");
+	                dto.setRecipientLocCode("Unknown Location");
 	            }
 	          
 	            dto.setRecipientDepartment(parcel.getRecipientDepartment());
@@ -461,14 +468,16 @@ public class TrnParcelOutService {
 		            dto.setSenderDepartment(parcel.getSenderDepartment());
 		            dto.setSenderName(parcel.getSenderName());
 		            String recipientlocode = parcel.getRecipientLocCode();
-		            if (recipientlocode != null) {
-		            	recipientlocode = recipientlocode.trim();
+		            if (recipientlocode != null && !recipientlocode.trim().isEmpty()) {
+		                recipientlocode = recipientlocode.trim();
 		                String recLocName = mstLocationService.getLocNameByCode(recipientlocode);
-		                // Set formatted location information in senderLocCode
-		                dto.setRecipientLocCode(recLocName +" (" + recipientlocode + ")");
+		                dto.setRecipientLocCode(recLocName != null && !recLocName.trim().isEmpty()
+		                    ? recLocName + " (" + recipientlocode + ")"
+		                   // : "Unknown Location (" + recipientlocode + ")"
+		                   : recipientlocode 
+		                		);
 		            } else {
-		                // Handle the case where senderLocCode is null
-		                dto.setRecipientLocCode("unknown location");
+		                dto.setRecipientLocCode("Unknown Location");
 		            }
 		          
 		            dto.setRecipientDepartment(parcel.getRecipientDepartment());

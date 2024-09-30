@@ -2,8 +2,10 @@ package com.iocl.Dispatch_Portal_Application.ServiceLayer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +34,9 @@ import com.iocl.Dispatch_Portal_Application.modal.StatusCodeModal;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import utils.snSendEMail;
+
 
 
 @Service
@@ -68,6 +73,64 @@ public class TrnParcelInService {
     
     
     
+//    public ResponseEntity<?> createParcelIn(ParcelInDto parcelInRequest, HttpServletRequest request) throws IOException {
+//        TrnParcelIn parcelIn = parcelInRequest.toTrnParcelIn();
+//        String token = jwtUtils.getJwtFromCookies(request);
+//
+//        // Validate and extract information from the JWT token
+//        String locCode = jwtUtils.getLocCodeFromJwtToken(token);
+//        String username = jwtUtils.getUserNameFromJwtToken(token);
+//
+//        if (locCode == null || username == null) {
+//            StatusCodeModal statusCodeModal = new StatusCodeModal();
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(statusCodeModal);
+//        }
+//
+//        parcelIn.setRecipientLocCode(locCode);
+//        parcelIn.setCreatedBy(username);
+//        parcelIn.setReceivedDate(LocalDate.now());
+//        parcelIn.setCreatedDate(LocalDate.now());
+//
+//        if (trnParcelInRepository.existsByConsignmentNumber(parcelIn.getConsignmentNumber())) {
+//            StatusCodeModal statusCodeModal = new StatusCodeModal();
+//            statusCodeModal.setStatus("Consignment number already exists: " + parcelIn.getConsignmentNumber());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(statusCodeModal);
+//        }
+//
+//        TrnParcelIn createdParcel = trnParcelInRepository.save(parcelIn);
+//
+//        StatusCodeModal statusCodeModal = new StatusCodeModal();
+//        if (createdParcel != null) {
+//            // Generate PDF
+//            byte[] pdfBytes = generatePdf(createdParcel);
+//
+//            // Fetch employee email based on locCode and recipient's name
+//            Optional<MstEmployee> recipientEmployeeOpt = employeeRepository.findByLocCodeAndEmpName(locCode, parcelIn.getRecipientName());
+//            if (recipientEmployeeOpt.isPresent()) {
+//                MstEmployee recipientEmployee = recipientEmployeeOpt.get();
+//               // String email = recipientEmployee.getEmailId();
+//                String email = "hbaishya@indianoil.in";
+//                String name=recipientEmployee.getEmpName();
+//                if (email != null) {                	
+//                	String subject = "Parcel Notification";
+//                	String messageBody = "<p>Dear " + name + ",</p>" +
+//                            "<p>You have received a new parcel with Tracking ID: " + createdParcel.getConsignmentNumber() + ".</p>" +
+//                            "<p>Please find the details in the attached PDF.</p>" +
+//                            "<p>Best regards,<br>" +
+//                            "Indian Oil Corporation Limited</p>";
+//                    emailService.sendEmail(email, subject, messageBody, pdfBytes);
+//                   // emailService.sendEmail(email, "Parcel Notification", "You have received a new parcel with Tracking ID: " + createdParcel.getConsignmentNumber(), pdfBytes);
+//                }
+//                           }
+//            statusCodeModal.setStatus_code(HttpStatus.CREATED.value());
+//            statusCodeModal.setStatus("Parcel created successfully with id: " + createdParcel.getConsignmentNumber());
+//            return ResponseEntity.status(HttpStatus.CREATED).body(statusCodeModal);
+//        } else {
+//            statusCodeModal.setStatus_code(HttpStatus.BAD_REQUEST.value());
+//            statusCodeModal.setStatus("Failed to create parcel. Please try again.");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(statusCodeModal);
+//        }
+//    }
     public ResponseEntity<?> createParcelIn(ParcelInDto parcelInRequest, HttpServletRequest request) throws IOException {
         TrnParcelIn parcelIn = parcelInRequest.toTrnParcelIn();
         String token = jwtUtils.getJwtFromCookies(request);
@@ -100,22 +163,53 @@ public class TrnParcelInService {
             byte[] pdfBytes = generatePdf(createdParcel);
 
             // Fetch employee email based on locCode and recipient's name
-            Optional<MstEmployee> recipientEmployeeOpt = employeeRepository.findByLocCodeAndEmpName(locCode, parcelIn.getRecipientName());
+            Optional<MstEmployee> recipientEmployeeOpt = employeeRepository.findByLocCodeAndEmpName(locCode.trim(), parcelIn.getRecipientName());
+          logger.info("details to before if: ");     
             if (recipientEmployeeOpt.isPresent()) {
+                logger.info("detais after if");     
+
                 MstEmployee recipientEmployee = recipientEmployeeOpt.get();
-                String email = recipientEmployee.getEmailId();
-                String name=recipientEmployee.getEmpName();
-                if (email != null) {                	
-                	String subject = "Parcel Notification";
-                	String messageBody = "<p>Dear " + name + ",</p>" +
-                            "<p>You have received a new parcel with Tracking ID: " + createdParcel.getConsignmentNumber() + ".</p>" +
-                            "<p>Please find the details in the attached PDF.</p>" +
-                            "<p>Best regards,<br>" +
-                            "Indian Oil Corporation Limited</p>";
-                    emailService.sendEmail(email, subject, messageBody, pdfBytes);
-                   // emailService.sendEmail(email, "Parcel Notification", "You have received a new parcel with Tracking ID: " + createdParcel.getConsignmentNumber(), pdfBytes);
-                }
-                           }
+                logger.info("Recipient Employee Details: {}", recipientEmployee);
+
+//                String email = recipientEmployee.getEmailId();  // Fetch email from employee details
+//               String email = "hbaishya@indianoil.in";
+                String email = "kilugusai2001@gmail.com";
+//                String name = recipientEmployee.getEmpName();
+                logger.info("Sending email to: {}", email);                
+                // Call sendEmail method
+                logger.info("Calling sendEmail method...");  // Log before sending email
+                if (email != null) {
+                	  System.out.println("Sending email to: " + email);  // Debug statement            	
+                	  String subject = "TenderMitra-Parking of tenders 3 days";
+                      String tref = "T12345";  // Placeholder for tender reference number
+                      String tdesc = "Supply of Goods";  // Placeholder for tender description
+                      String sub_date = "15-09-2024";  // Placeholder for submission date
+                      Date parkingDate = new Date();  // Current date as parking date
+                      String rema = "Please resubmit missing documents.";  // Placeholder for remarks
+
+                      String body = "<html><body>The following tender initiated in TenderMitra has been parked.<br>"
+                          + "<table border='1'><tr><td>Reference no</td><td>" + tref + "</td></tr>"
+                          + "<tr><td>Description</td><td>" + tdesc + "</td></tr>"
+                          + "<tr><td>Date of Submission</td><td>" + sub_date + "</td></tr>"
+                          + "<tr><td>Date of Parking</td><td>" + new SimpleDateFormat("dd-MM-yyyy").format(parkingDate) + "</td></tr>"
+                          + "<tr><td>Remark</td><td>" + rema + "</td></tr>"
+                          + "</table><br>"
+                          + "Please resubmit with required documents/clarifications. If parked for 10 days, the tender will be auto-rejected by the system.<br>"
+                          + "Pl. visit https://webapp.indianoil.co.in/Mitra for further details.<br>"
+                          + "<br>*** This is an automatically generated email, please do not reply ***"
+                          + "</body></html>";
+
+                      // snSendEMail call
+                      String from = "Mitra@indianoil.in";
+                      String to = email;
+                      String cc = "";
+                      String bcc = "";
+
+                      System.out.println("Calling sendEmail method");  // Debug statement
+                      emailService.sendEmail(from, to, cc, bcc, subject, body);
+                  }
+            }
+
             statusCodeModal.setStatus_code(HttpStatus.CREATED.value());
             statusCodeModal.setStatus("Parcel created successfully with id: " + createdParcel.getConsignmentNumber());
             return ResponseEntity.status(HttpStatus.CREATED).body(statusCodeModal);
@@ -125,6 +219,7 @@ public class TrnParcelInService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(statusCodeModal);
         }
     }
+
 
     
 
@@ -283,7 +378,7 @@ public class TrnParcelInService {
 
                     if (email != null) {
                         try {
-                            emailService.sendEmail(email, "Parcel Status Changed", "The status of the parcel with Tracking ID " + inTrackingId + " has been changed to 'D'.", pdfBytes);
+//                            emailService.sendEmail(email, "Parcel Status Changed", "The status of the parcel with Tracking ID " + inTrackingId + " has been changed to 'D'.", pdfBytes);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -379,7 +474,9 @@ public class TrnParcelInService {
                 String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
                 dto.setSenderLocCode(senderLocName != null && !senderLocName.trim().isEmpty()
                     ? senderLocName + " (" + senderLocCode + ")"
-                    : "Unknown Location (" + senderLocCode + ")");
+//                    : "Unknown Location (" + senderLocCode + ")"
+                    		 :senderLocCode
+                    );
             } else {
                 dto.setSenderLocCode("Unknown Location");
             }
@@ -431,7 +528,9 @@ public class TrnParcelInService {
                 String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
                 dto.setSenderLocCode(senderLocName != null && !senderLocName.trim().isEmpty()
                     ? senderLocName + " (" + senderLocCode + ")"
-                    : "Unknown Location (" + senderLocCode + ")");
+               //     : "Unknown Location (" + senderLocCode + ")"
+                    		 :senderLocCode 
+                		);
             } else {
                 dto.setSenderLocCode("Unknown Location");
             }
@@ -481,7 +580,9 @@ public class TrnParcelInService {
 	                String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
 	                dto.setSenderLocCode(senderLocName != null && !senderLocName.trim().isEmpty()
 	                    ? senderLocName + " (" + senderLocCode + ")"
-	                    : "Unknown Location (" + senderLocCode + ")");
+	                  //  : "Unknown Location (" + senderLocCode + ")"
+	                    		 :senderLocCode
+	                		);
 	            } else {
 	                dto.setSenderLocCode("Unknown Location");
 	            }
@@ -525,15 +626,24 @@ public class TrnParcelInService {
 		        dto.setReceivedDate(parcel.getReceivedDate());
 		        
 		        String senderLocCode = parcel.getSenderLocCode();
-		        if (senderLocCode != null) {
-		            senderLocCode = senderLocCode.trim();
-		            String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
-		            // Set formatted location information in senderLocCode
-		            dto.setSenderLocCode(senderLocName + " (" + senderLocCode + ")");
-		        } else {
-		            // Handle the case where senderLocCode is null
-		            dto.setSenderLocCode("Unknown Location");
-		        }
+//		        if (senderLocCode != null) {
+//		            senderLocCode = senderLocCode.trim();
+//		            String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
+//		            dto.setSenderLocCode(senderLocName + " (" + senderLocCode + ")");
+//		        } else {
+//		            dto.setSenderLocCode("Unknown Location");
+//		        }
+		        if (senderLocCode != null && !senderLocCode.trim().isEmpty()) {
+	                senderLocCode = senderLocCode.trim();
+	                String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
+	                dto.setSenderLocCode(senderLocName != null && !senderLocName.trim().isEmpty()
+	                    ? senderLocName + " (" + senderLocCode + ")"
+	                  //  : "Unknown Location (" + senderLocCode + ")"
+	                    		 :senderLocCode
+	                		);
+	            } else {
+	                dto.setSenderLocCode("Unknown Location");
+	            }
 		        
 		        dto.setSenderDepartment(parcel.getSenderDepartment());
 		        dto.setSenderName(parcel.getSenderName());
@@ -563,15 +673,24 @@ public class TrnParcelInService {
 		        dto.setReceivedDate(parcel.getReceivedDate());
 		        
 		        String senderLocCode = parcel.getSenderLocCode();
-		        if (senderLocCode != null) {
-		            senderLocCode = senderLocCode.trim();
-		            String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
-		            // Set formatted location information in senderLocCode
-		            dto.setSenderLocCode(senderLocName + " (" + senderLocCode + ")");
-		        } else {
-		            // Handle the case where senderLocCode is null
-		            dto.setSenderLocCode("Unknown Location");
-		        }
+//		        if (senderLocCode != null) {
+//		            senderLocCode = senderLocCode.trim();
+//		            String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
+//		            dto.setSenderLocCode(senderLocName + " (" + senderLocCode + ")");
+//		        } else {
+//		            dto.setSenderLocCode("Unknown Location");
+//		        }
+		        if (senderLocCode != null && !senderLocCode.trim().isEmpty()) {
+	                senderLocCode = senderLocCode.trim();
+	                String senderLocName = mstLocationService.getLocNameByCode(senderLocCode);
+	                dto.setSenderLocCode(senderLocName != null && !senderLocName.trim().isEmpty()
+	                    ? senderLocName + " (" + senderLocCode + ")"
+	                  //  : "Unknown Location (" + senderLocCode + ")"
+	                    		 :senderLocCode
+	                		);
+	            } else {
+	                dto.setSenderLocCode("Unknown Location");
+	            }
 		        
 		        dto.setSenderDepartment(parcel.getSenderDepartment());
 		        dto.setSenderName(parcel.getSenderName());

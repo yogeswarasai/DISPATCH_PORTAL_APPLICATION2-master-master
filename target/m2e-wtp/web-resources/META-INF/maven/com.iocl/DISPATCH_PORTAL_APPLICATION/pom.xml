@@ -14,6 +14,7 @@
 	<name>DISPATCH_PORTAL_APPLICATION</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+  <snLibrary-systemPath>C:\Users\ishdapso\Downloads\DISPATCH_PORTAL_APPLICATION2-master-master/jars/snLibrary.jar</snLibrary-systemPath>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
@@ -162,7 +163,21 @@
     <artifactId>itextpdf</artifactId>
     <version>5.5.13.3</version> <!-- Check for the latest version -->
 </dependency>
-		
+<dependency>
+    <groupId>com.sn</groupId>
+    <artifactId>snLibrary</artifactId>
+    <version>1.0</version>
+    <scope>system</scope>
+    <systemPath>C:\Users\ishdapso\Downloads\DISPATCH_PORTAL_APPLICATION2-master-master/libs/snLibrary.jar</systemPath>
+</dependency>
+
+<dependency>
+    <groupId>commons-dbcp</groupId>
+    <artifactId>commons-dbcp</artifactId>
+    <version>1.4</version>
+</dependency>
+
+
 	</dependencies>
 
 
@@ -175,4 +190,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 </project>
